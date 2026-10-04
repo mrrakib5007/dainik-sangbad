@@ -75,12 +75,7 @@ const Footer: React.FC = () => {
           <h4 className="text-white font-bold mb-3 border-l-2 border-(--primary) pl-2">
             জনপ্রিয় বিভাগ
           </h4>
-          <ul className="space-y-1.5 text-xs text-zinc-400">
-            <li>
-              <Link href="/category/national" className="hover:text-(--primary) transition-colors">
-                জাতীয় সংবাদ
-              </Link>
-            </li>
+          <ul className="space-y-1.5 text-xs text-zinc-400">            
             <li>
               <Link href="/category/politics" className="hover:text-(--primary) transition-colors">
                 রাজনীতি পর্যালোচনা
@@ -89,6 +84,11 @@ const Footer: React.FC = () => {
             <li>
               <Link href="/category/economy" className="hover:text-(--primary) transition-colors">
                 অর্থনীতি ও শেয়ারবাজার
+              </Link>
+            </li>
+            <li>
+              <Link href="/category/world" className="hover:text-(--primary) transition-colors">
+                আন্তর্জাতিক সংবাদ
               </Link>
             </li>
             <li>
