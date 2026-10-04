@@ -35,7 +35,7 @@ const Footer: React.FC = () => {
   };
 
   return (
-    <footer className="bg-zinc-900 text-zinc-300 border-t border-zinc-800 mt-12 text-sm">
+    <footer className="bg-zinc-900 text-zinc-300 border-t border-zinc-800 mt-12 text-sm text-left">
       <div className="max-w-7xl mx-auto px-4 py-10 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-8">
         <div className="lg:col-span-5">
           <Link href="/" className="inline-flex items-center gap-3 mb-3 group">
@@ -67,11 +67,14 @@ const Footer: React.FC = () => {
               মোঃ রাকিব হোসেন
             </a>
           </p>
-          <p className="text-xs text-zinc-500">কার্যালয়: উত্তরা, ঢাকা-১২৩০</p>
+          <p className="text-xs text-zinc-500 mb-1">কার্যালয়: উত্তরা, ঢাকা-১২৩০</p>
+          <p className="text-xs text-zinc-500">Source: BBC Bangla</p>
         </div>
 
         <div className="lg:col-span-2">
-          <h4 className="text-white font-bold mb-3 border-l-2 border-(--primary) pl-2">জনপ্রিয় বিভাগ</h4>
+          <h4 className="text-white font-bold mb-3 border-l-2 border-(--primary) pl-2">
+            জনপ্রিয় বিভাগ
+          </h4>
           <ul className="space-y-1.5 text-xs text-zinc-400">
             <li>
               <Link href="/category/national" className="hover:text-(--primary) transition-colors">
@@ -102,7 +105,9 @@ const Footer: React.FC = () => {
         </div>
 
         <div className="lg:col-span-2">
-          <h4 className="text-white font-bold mb-3 border-l-2 border-(--primary) pl-2">অন্যান্য সেবা</h4>
+          <h4 className="text-white font-bold mb-3 border-l-2 border-(--primary) pl-2">
+            অন্যান্য সেবা
+          </h4>
           <ul className="space-y-1.5 text-xs text-zinc-400">
             <li>
               <Link href="/epaper" className="hover:text-(--primary) transition-colors">
@@ -133,7 +138,9 @@ const Footer: React.FC = () => {
         </div>
 
         <div className="lg:col-span-3">
-          <h4 className="text-white font-bold mb-3 border-l-2 border-(--primary) pl-2">আমাদের সাথে যুক্ত থাকুন</h4>
+          <h4 className="text-white font-bold mb-3 border-l-2 border-(--primary) pl-2">
+            আমাদের সাথে যুক্ত থাকুন
+          </h4>
           <p className="text-xs text-zinc-400 mb-3">সোশ্যাল মিডিয়ায় সর্বশেষ সংবাদের সাথে থাকুন সবসময়।</p>
           <div className="flex gap-2">
             <a

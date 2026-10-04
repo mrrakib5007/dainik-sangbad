@@ -1,7 +1,7 @@
-import React from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { Metadata } from "next";
 import { FiClock, FiArrowLeft, FiTag } from "react-icons/fi";
 import MostReadSection from "@/components/Home/MostReadSection/MostReadSection";
 
@@ -87,21 +87,56 @@ async function getMostReadNews() {
   }
 }
 
-export async function generateMetadata({ params }: PageProps) {
+export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { id } = await params;
   const article = await getArticleDetails(id);
 
   if (!article) {
     return {
-      title: "সংবাদ পাওয়া যায়নি - দৈনিক সংবাদ"
+      title: "সংবাদ পাওয়া যায়নি - দৈনিক সংবাদ",
+      description: "অনুরোধকৃত সংবাদটি এই মুহূর্তে পাওয়া যাচ্ছে না।"
     };
   }
 
+  const firstText = article.body?.find((b) => b.type === "text" && b.text)?.text || article.title;
+  const description = firstText.length > 160 ? `${firstText.slice(0, 157)}...` : firstText;
+  const categoryName = article.topics?.[0]?.name || article.tags?.[0] || "সংবাদ";
+  const canonicalUrl = `/article/${article.id}`;
+
   return {
     title: `${article.title} - দৈনিক সংবাদ`,
-    description: article.title,
+    description,
+    keywords: article.tags?.length ? article.tags : [categoryName, "সংবাদ", "বাংলাদেশ"],
+    alternates: {
+      canonical: canonicalUrl
+    },
     openGraph: {
       title: article.title,
+      description,
+      url: canonicalUrl,
+      siteName: "দৈনিক সংবাদ",
+      locale: "bn_BD",
+      type: "article",
+      publishedTime: article.firstPublished,
+      modifiedTime: article.lastPublished,
+      authors: [article.source || "দৈনিক সংবাদ"],
+      section: categoryName,
+      tags: article.tags,
+      images: article.imageUrl
+        ? [
+            {
+              url: article.imageUrl,
+              width: 1200,
+              height: 630,
+              alt: article.title
+            }
+          ]
+        : []
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: article.title,
+      description,
       images: article.imageUrl ? [article.imageUrl] : []
     }
   };
@@ -128,8 +163,36 @@ export default async function ArticleDetailsPage({ params }: PageProps) {
 
   const categoryName = article.topics?.[0]?.name || article.tags?.[0] || "প্রধান খবর";
 
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "NewsArticle",
+    headline: article.title,
+    image: article.imageUrl ? [article.imageUrl] : [],
+    datePublished: article.firstPublished,
+    dateModified: article.lastPublished || article.firstPublished,
+    author: [
+      {
+        "@type": "Organization",
+        name: article.source || "দৈনিক সংবাদ"
+      }
+    ],
+    publisher: {
+      "@type": "Organization",
+      name: "দৈনিক সংবাদ",
+      logo: {
+        "@type": "ImageObject",
+        url: "/logo.png"
+      }
+    },
+    description: article.title
+  };
+
   return (
     <div className="bg-neutral-50 min-h-screen py-8">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
       <div className="max-w-7xl mx-auto px-4">
         <div className="mb-6 flex items-center justify-between">
           <Link

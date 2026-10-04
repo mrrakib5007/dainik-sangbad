@@ -19,7 +19,7 @@ const MarqueeSlider = ({ news }: MarqueeSliderProps) => {
       {news.map((item, index) => (
         <span key={item.id} className="inline-flex items-center">
           <Link
-            href={`/news/${item.id}`}
+            href={`/article/${item.id}`}
             className="hover:text-primary hover:underline underline-offset-4 decoration-primary transition-colors mx-3"
           >
             {item.title}
