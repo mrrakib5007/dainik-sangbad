@@ -3,21 +3,9 @@
 import React, { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import PostCard, { PostItem } from "@/components/Cards/PostCard";
 
-export interface NewsItem {
-  id: string;
-  title: string;
-  description?: string;
-  link: string;
-  imageUrl: string;
-  imageAlt?: string;
-  category?: string;
-  firstPublished?: string;
-  lastPublished?: string;
-  isLive?: boolean;
-  source?: string;
-  type?: string;
-}
+export type NewsItem = PostItem;
 
 interface MainNewsProps {
   news?: NewsItem[] | null;
@@ -175,47 +163,11 @@ const MainNews: React.FC<MainNewsProps> = ({ news }) => {
         <div className="border-t border-neutral-200 pt-8">
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {remainingNews.map((item) => (
-              <Link
+              <PostCard
                 key={item.id}
-                href={`/article/${item.id}`}
-                className="group bg-white border border-neutral-200 rounded-2xl overflow-hidden flex flex-col justify-between"
-              >
-                <div>
-                  <div className="relative aspect-video w-full bg-neutral-100 overflow-hidden">
-                    <SafeImage
-                      src={item.imageUrl}
-                      alt={item.imageAlt || item.title}
-                      fill
-                      sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                      className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
-                    />
-                  </div>
-
-                  <div className="p-4 pb-0">
-                    <span className="inline-block text-xs font-semibold text-(--primary) mb-2">
-                      {item.category || "প্রধান খবর"}
-                    </span>
-
-                    <h3 className="text-base font-bold text-neutral-900 group-hover:text-(--primary) transition-colors leading-snug line-clamp-2 mb-2">
-                      {item.title}
-                    </h3>
-
-                    {item.description && (
-                      <p className="text-xs text-neutral-500 line-clamp-2 leading-relaxed">
-                        {item.description}
-                      </p>
-                    )}
-                  </div>
-                </div>
-
-                {item.firstPublished && (
-                  <div className="p-4 pt-3">
-                    <span className="text-xs text-neutral-400 block">
-                      {formatDateTime(item.firstPublished)}
-                    </span>
-                  </div>
-                )}
-              </Link>
+                post={item}
+                fallbackCategory="প্রধান খবর"
+              />
             ))}
           </div>
         </div>
