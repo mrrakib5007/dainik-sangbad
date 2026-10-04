@@ -3,28 +3,9 @@
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { usePathname } from "next/navigation";
 import { HiMenu, HiX } from "react-icons/hi";
 import { FiUser, FiLogIn } from "react-icons/fi";
 import { BsCalendar3, BsClock } from "react-icons/bs";
-
-interface NavCategory {
-  readonly id: string;
-  readonly name: string;
-  readonly path: string;
-}
-
-const NAV_CATEGORIES: readonly NavCategory[] = [
-  { id: "all", name: "সর্বশেষ", path: "/" },
-  { id: "national", name: "জাতীয়", path: "/category/national" },
-  { id: "politics", name: "রাজনীতি", path: "/category/politics" },
-  { id: "economy", name: "অর্থনীতি", path: "/category/economy" },
-  { id: "international", name: "আন্তর্জাতিক", path: "/category/international" },
-  { id: "sports", name: "খেলাধুলা", path: "/category/sports" },
-  { id: "entertainment", name: "বিনোদন", path: "/category/entertainment" },
-  { id: "tech", name: "প্রযুক্তি", path: "/category/tech" },
-  { id: "opinion", name: "মতামত", path: "/category/opinion" },
-];
 
 const banglaNumbers: Record<string, string> = {
   "0": "০", "1": "১", "2": "২", "3": "৩", "4": "৪",
@@ -35,11 +16,15 @@ const toBanglaDigits = (str: string | number): string => {
   return str.toString().replace(/[0-9]/g, (match: string) => banglaNumbers[match] || match);
 };
 
-const Navbar: React.FC = () => {
+interface NavbarProps {
+  navLinks?: React.ReactNode;
+  mobileNavLinks?: React.ReactNode;
+}
+
+const Navbar: React.FC<NavbarProps> = ({ navLinks, mobileNavLinks }) => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState<boolean>(false);
   const [currentDate, setCurrentDate] = useState<string>("");
   const [currentTime, setCurrentTime] = useState<string>("");
-  const pathname: string = usePathname();
 
   useEffect(() => {
     const updateTime = (): void => {
@@ -85,7 +70,6 @@ const Navbar: React.FC = () => {
   return (
     <header className="sticky top-0 z-40 w-full bg-white dark:bg-zinc-900 border-b border-zinc-200 dark:border-zinc-800 transition-colors shadow-xs">
       <div className="max-w-7xl mx-auto px-4 py-3 sm:py-4 flex items-center justify-between gap-4">
-        
         <Link href="/" className="group flex items-center gap-3 select-none">
           <div className="relative w-10 h-10 sm:w-11 sm:h-11 rounded-xl overflow-hidden shadow-md shrink-0">
             <Image
@@ -148,23 +132,8 @@ const Navbar: React.FC = () => {
       </div>
 
       <nav className="hidden lg:block bg-primary-hover dark:bg-deep-primary text-white shadow-inner overflow-x-auto scrollbar-none">
-        <div className="max-w-7xl mx-auto px-4 flex items-center space-x-1 font-semibold text-sm whitespace-nowrap">
-          {NAV_CATEGORIES.map((cat: NavCategory) => {
-            const isActive: boolean = pathname === cat.path;
-            return (
-              <Link
-                key={cat.id}
-                href={cat.path}
-                className={`py-2.5 px-3.5 border-b-2 transition ${
-                  isActive
-                    ? "bg-deep-primary border-white"
-                    : "border-transparent hover:bg-primary"
-                }`}
-              >
-                {cat.name}
-              </Link>
-            );
-          })}
+        <div className="max-w-7xl mx-auto px-4 flex items-center space-x-1 font-semibold text-sm whitespace-nowrap min-h-11">
+          {navLinks}
         </div>
       </nav>
 
@@ -209,25 +178,11 @@ const Navbar: React.FC = () => {
           </button>
         </div>
 
-        <div className="flex-1 overflow-y-auto p-4 space-y-1">
-          {NAV_CATEGORIES.map((cat: NavCategory) => {
-            const isActive: boolean = pathname === cat.path;
-            return (
-              <Link
-                key={cat.id}
-                href={cat.path}
-                onClick={() => setMobileMenuOpen(false)}
-                className={`flex items-center justify-between px-3.5 py-2.5 rounded-lg text-sm font-semibold transition ${
-                  isActive
-                    ? "bg-primary text-white shadow-xs"
-                    : "text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-800"
-                }`}
-              >
-                <span>{cat.name}</span>
-                {isActive && <span className="w-1.5 h-1.5 rounded-full bg-white"></span>}
-              </Link>
-            );
-          })}
+        <div
+          className="flex-1 overflow-y-auto p-4 space-y-1"
+          onClick={() => setMobileMenuOpen(false)}
+        >
+          {mobileNavLinks}
         </div>
 
         <div className="p-4 border-t border-zinc-200 dark:border-zinc-800 space-y-3 bg-zinc-50/60 dark:bg-zinc-950/40">
