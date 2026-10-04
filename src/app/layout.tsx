@@ -3,6 +3,7 @@ import { Anek_Bangla } from "next/font/google";
 import "./globals.css";
 import Navbar from "@/components/Shared/Navbar";
 import NavLinks from "@/components/Shared/NavLinks";
+import Footer from "@/components/Shared/Footer";
 
 const anekBangla = Anek_Bangla({
   variable: "--font-anek-bangla",
@@ -56,6 +57,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
           mobileNavLinks={<NavLinks isMobile={true} />}
         />        
         {children}
+        <Footer />
       </body>
     </html>
   );

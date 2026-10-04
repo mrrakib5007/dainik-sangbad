@@ -9,9 +9,12 @@ const BreakingNews = async () => {
   let finalData: BreakingNewsItem[] = [];
 
   try {
-    const res = await fetch("https://news-api-v2.vercel.app/api/news?limit=10", {
-      next: { revalidate: 60 },
-    });
+    const res = await fetch(
+      "https://news-api-v2.vercel.app/api/news?limit=10",
+      {
+        next: { revalidate: 60 },
+      },
+    );
 
     if (res.ok) {
       const data = await res.json();
