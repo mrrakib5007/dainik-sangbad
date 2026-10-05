@@ -23,10 +23,10 @@ This platform provides readers with a seamless digital journalism experience. Be
 
 ## Tech Stack
 
-* **Framework:** Next.js (App Router)
-* **Language:** TypeScript / JavaScript
+* **Framework:** Next.js
+* **Language:** TypeScript
 * **Styling:** Tailwind CSS
-* **Icons:** React Icons (Feather Icons, Weather Icons, FontAwesome)
+* **Icons:** React Icons
 * **Deployment:** Vercel
 
 ---
