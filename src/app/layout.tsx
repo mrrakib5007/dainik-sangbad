@@ -4,7 +4,6 @@ import "./globals.css";
 import Navbar from "@/components/Shared/Navbar";
 import NavLinks from "@/components/Shared/NavLinks";
 import Footer from "@/components/Shared/Footer";
-import BreakingNews from "@/components/Home/BreakingNews/BreakingNews";
 
 const anekBangla = Anek_Bangla({
   variable: "--font-anek-bangla",
@@ -56,8 +55,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         <Navbar
           navLinks={<NavLinks isMobile={false} />}
           mobileNavLinks={<NavLinks isMobile={true} />}
-        />   
-        <BreakingNews />     
+        />     
         {children}
         <Footer />
       </body>

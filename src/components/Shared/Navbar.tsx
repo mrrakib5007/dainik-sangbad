@@ -1,11 +1,13 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 import { HiMenu, HiX } from "react-icons/hi";
-import { FiUser, FiLogIn } from "react-icons/fi";
+import { FiUser, FiLogIn, FiLogOut } from "react-icons/fi";
 import { BsCalendar3, BsClock } from "react-icons/bs";
+import { authClient } from "@/lib/auth-client";
 
 const banglaNumbers: Record<string, string> = {
   "0": "০", "1": "১", "2": "২", "3": "৩", "4": "৪",
@@ -16,15 +18,40 @@ const toBanglaDigits = (str: string | number): string => {
   return str.toString().replace(/[0-9]/g, (match: string) => banglaNumbers[match] || match);
 };
 
+const FALLBACK_AVATAR = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 24 24' fill='%239ca3af'><path d='M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z'/></svg>";
+const DEFAULT_AVATAR = "https://i.ibb.co.com/0pYDjxCk/avater.jpg";
+
 interface NavbarProps {
   navLinks?: React.ReactNode;
   mobileNavLinks?: React.ReactNode;
 }
 
 const Navbar: React.FC<NavbarProps> = ({ navLinks, mobileNavLinks }) => {
+  const router = useRouter();
+  const { data: session, isPending } = authClient.useSession();
   const [mobileMenuOpen, setMobileMenuOpen] = useState<boolean>(false);
+  const [userMenuOpen, setUserMenuOpen] = useState<boolean>(false);
   const [currentDate, setCurrentDate] = useState<string>("");
   const [currentTime, setCurrentTime] = useState<string>("");
+  const [imageError, setImageError] = useState<boolean>(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
+  const displayImage = imageError
+    ? FALLBACK_AVATAR
+    : session?.user?.image || DEFAULT_AVATAR;
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setUserMenuOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
 
   useEffect(() => {
     const updateTime = (): void => {
@@ -67,6 +94,14 @@ const Navbar: React.FC<NavbarProps> = ({ navLinks, mobileNavLinks }) => {
     };
   }, [mobileMenuOpen]);
 
+  const handleLogout = async () => {
+    setUserMenuOpen(false);
+    setMobileMenuOpen(false);
+    await authClient.signOut();
+    router.push("/");
+    router.refresh();
+  };
+
   return (
     <header className="sticky top-0 z-40 w-full bg-white dark:bg-zinc-900 border-b border-zinc-200 dark:border-zinc-800 transition-colors shadow-xs">
       <div className="max-w-7xl mx-auto px-4 py-3 sm:py-4 flex items-center justify-between gap-4">
@@ -104,22 +139,71 @@ const Navbar: React.FC<NavbarProps> = ({ navLinks, mobileNavLinks }) => {
             </div>
           </div>
 
-          <div className="hidden sm:flex items-center gap-2">
-            <Link
-              href="/login"
-              className="inline-flex items-center gap-1.5 px-3.5 py-1.5 text-xs font-semibold text-zinc-700 dark:text-zinc-200 hover:text-primary dark:hover:text-primary transition"
-            >
-              <FiLogIn className="w-3.5 h-3.5" />
-              লগইন
-            </Link>
-            <Link
-              href="/register"
-              className="inline-flex items-center gap-1.5 px-4 py-1.5 text-xs font-semibold text-white bg-primary hover:bg-primary-hover rounded-lg transition shadow-xs"
-            >
-              <FiUser className="w-3.5 h-3.5" />
-              নিবন্ধন
-            </Link>
-          </div>
+          {!isPending && (
+            <div className="hidden sm:flex items-center gap-2">
+              {session?.user ? (
+                <div className="relative" ref={dropdownRef}>
+                  <button
+                    onClick={() => setUserMenuOpen((prev) => !prev)}
+                    className="flex items-center gap-2 p-0.5 rounded-full ring-2 ring-gray-200 hover:ring-2 hover:ring-primary/50 transition cursor-pointer"
+                    aria-label="User Menu"
+                  >
+                    <div className="relative w-9 h-9 rounded-full overflow-hidden border border-zinc-200 dark:border-zinc-700 bg-zinc-100 dark:bg-zinc-800">
+                      <Image
+                        src={displayImage}
+                        alt={session.user.name || "User Avatar"}
+                        fill
+                        unoptimized={displayImage.startsWith("data:")}
+                        onError={() => setImageError(true)}
+                        sizes="36px"
+                        className="object-cover"
+                      />
+                    </div>
+                  </button>
+
+                  {userMenuOpen && (
+                    <div className="absolute right-0 mt-2 w-64 rounded-2xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 shadow-xl py-2 z-50 animate-in fade-in zoom-in-95 duration-150">
+                      <div className="px-4 py-3 border-b border-zinc-100 dark:border-zinc-800">
+                        <p className="text-sm font-bold text-zinc-900 dark:text-white truncate">
+                          {session.user.name}
+                        </p>
+                        <p className="text-xs text-zinc-500 dark:text-zinc-400 truncate mt-0.5">
+                          {session.user.email}
+                        </p>
+                      </div>
+
+                      <div className="p-1.5">
+                        <button
+                          onClick={handleLogout}
+                          className="w-full flex items-center gap-2.5 px-3 py-2 text-xs font-semibold text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/30 rounded-xl transition cursor-pointer"
+                        >
+                          <FiLogOut className="w-4 h-4" />
+                          লগআউট করুন
+                        </button>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              ) : (
+                <>
+                  <Link
+                    href="/login"
+                    className="inline-flex items-center gap-1.5 px-3.5 py-1.5 text-xs font-semibold text-zinc-700 dark:text-zinc-200 hover:text-primary dark:hover:text-primary transition"
+                  >
+                    <FiLogIn className="w-3.5 h-3.5" />
+                    লগইন
+                  </Link>
+                  <Link
+                    href="/register"
+                    className="inline-flex items-center gap-1.5 px-4 py-1.5 text-xs font-semibold text-white bg-primary hover:bg-primary-hover rounded-lg transition shadow-xs"
+                  >
+                    <FiUser className="w-3.5 h-3.5" />
+                    নিবন্ধন
+                  </Link>
+                </>
+              )}
+            </div>
+          )}
 
           <button
             onClick={() => setMobileMenuOpen(true)}
@@ -197,24 +281,62 @@ const Navbar: React.FC<NavbarProps> = ({ navLinks, mobileNavLinks }) => {
             </div>
           </div>
 
-          <div className="flex gap-2 pt-1">
-            <Link
-              href="/login"
-              onClick={() => setMobileMenuOpen(false)}
-              className="flex-1 inline-flex items-center justify-center gap-1 py-2 text-xs font-semibold border border-zinc-300 dark:border-zinc-700 rounded-lg text-zinc-700 dark:text-zinc-200 hover:border-primary transition"
-            >
-              <FiLogIn className="w-3.5 h-3.5" />
-              লগইন
-            </Link>
-            <Link
-              href="/register"
-              onClick={() => setMobileMenuOpen(false)}
-              className="flex-1 inline-flex items-center justify-center gap-1 py-2 text-xs font-semibold bg-primary hover:bg-primary-hover text-white rounded-lg transition shadow-xs"
-            >
-              <FiUser className="w-3.5 h-3.5" />
-              নিবন্ধন
-            </Link>
-          </div>
+          {!isPending && (
+            <div className="pt-1">
+              {session?.user ? (
+                <div className="space-y-3">
+                  <div className="flex items-center gap-3 p-2 bg-zinc-100 dark:bg-zinc-800/60 rounded-xl">
+                    <div className="relative w-10 h-10 rounded-full overflow-hidden border border-zinc-200 dark:border-zinc-700 bg-zinc-200 dark:bg-zinc-800 shrink-0">
+                      <Image
+                        src={displayImage}
+                        alt={session.user.name || "User Avatar"}
+                        fill
+                        unoptimized={displayImage.startsWith("data:")}
+                        onError={() => setImageError(true)}
+                        sizes="40px"
+                        className="object-cover"
+                      />
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <p className="text-xs font-bold text-zinc-900 dark:text-white truncate">
+                        {session.user.name}
+                      </p>
+                      <p className="text-[11px] text-zinc-500 dark:text-zinc-400 truncate">
+                        {session.user.email}
+                      </p>
+                    </div>
+                  </div>
+
+                  <button
+                    onClick={handleLogout}
+                    className="w-full inline-flex items-center justify-center gap-1.5 py-2 text-xs font-semibold bg-red-500 hover:bg-red-600 text-white rounded-lg transition shadow-xs cursor-pointer"
+                  >
+                    <FiLogOut className="w-3.5 h-3.5" />
+                    লগআউট
+                  </button>
+                </div>
+              ) : (
+                <div className="flex gap-2">
+                  <Link
+                    href="/login"
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="flex-1 inline-flex items-center justify-center gap-1 py-2 text-xs font-semibold border border-zinc-300 dark:border-zinc-700 rounded-lg text-zinc-700 dark:text-zinc-200 hover:border-primary transition"
+                  >
+                    <FiLogIn className="w-3.5 h-3.5" />
+                    লগইন
+                  </Link>
+                  <Link
+                    href="/register"
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="flex-1 inline-flex items-center justify-center gap-1 py-2 text-xs font-semibold bg-primary hover:bg-primary-hover text-white rounded-lg transition shadow-xs"
+                  >
+                    <FiUser className="w-3.5 h-3.5" />
+                    নিবন্ধন
+                  </Link>
+                </div>
+              )}
+            </div>
+          )}
         </div>
       </div>
     </header>
