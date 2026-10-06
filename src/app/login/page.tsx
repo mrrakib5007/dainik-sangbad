@@ -119,6 +119,63 @@ export default function LoginPage() {
     }
   };
 
+  const handleGoogleSignIn = async () => {
+    try {
+      const { data, error } = await authClient.signIn.social({
+        provider: "google",
+        callbackURL: "/",
+      });
+
+      if (error) {
+        Swal.fire({
+          title: "লগইন ব্যর্থ হয়েছে",
+          text: error.message || "গুগল লগইন সম্পন্ন করা সম্ভব হয়নি, আবার চেষ্টা করুন।",
+          icon: "error",
+          confirmButtonText: "ঠিক আছে",
+          buttonsStyling: false,
+          customClass: {
+            confirmButton:
+              "bg-(--primary) text-white font-semibold px-5 py-2.5 rounded-xl cursor-pointer hover:opacity-90 transition-opacity",
+          },
+        });
+        return;
+      }
+
+      if (data) {
+        await Swal.fire({
+          title: "অভিনন্দন!",
+          text: "আপনার লগইন সফল হয়েছে।",
+          icon: "success",
+          confirmButtonText: "ঠিক আছে",
+          buttonsStyling: false,
+          customClass: {
+            confirmButton:
+              "bg-(--primary) text-white font-semibold px-5 py-2.5 rounded-xl cursor-pointer hover:opacity-90 transition-opacity",
+          },
+        });
+
+        router.push("/");
+      }
+    } catch (err: unknown) {
+      const errorMessage =
+        err instanceof Error
+          ? err.message
+          : "সার্ভারের সাথে সংযোগ স্থাপন করা সম্ভব হয়নি।";
+
+      Swal.fire({
+        title: "ত্রুটি!",
+        text: errorMessage,
+        icon: "error",
+        confirmButtonText: "ঠিক আছে",
+        buttonsStyling: false,
+        customClass: {
+          confirmButton:
+            "bg-(--primary) text-white font-semibold px-5 py-2.5 rounded-xl cursor-pointer hover:opacity-90 transition-opacity",
+        },
+      });
+    }
+  };
+
   return (
     <div className="min-h-[calc(100vh-200px)] bg-neutral-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
       <div className="sm:mx-auto sm:w-full sm:max-w-md px-4">
@@ -265,6 +322,7 @@ export default function LoginPage() {
             <div className="mt-5">
               <button
                 type="button"
+                onClick={handleGoogleSignIn}
                 className="w-full flex items-center justify-center gap-2 py-2.5 px-4 border border-neutral-200 rounded-xl text-sm font-semibold text-neutral-700 bg-white hover:bg-neutral-50 transition-colors cursor-pointer"
               >
                 <FcGoogle className="w-5 h-5" />

@@ -4,7 +4,14 @@ import React, { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import Swal from "sweetalert2";
-import { FiUser, FiMail, FiLock, FiEye, FiEyeOff, FiImage } from "react-icons/fi";
+import {
+  FiUser,
+  FiMail,
+  FiLock,
+  FiEye,
+  FiEyeOff,
+  FiImage,
+} from "react-icons/fi";
 import { FcGoogle } from "react-icons/fc";
 import { authClient } from "@/lib/auth-client";
 
@@ -105,7 +112,9 @@ export default function RegisterPage() {
       if (error) {
         Swal.fire({
           title: "নিবন্ধন ব্যর্থ হয়েছে",
-          text: error.message || "একটি সমস্যা হয়েছে, অনুগ্রহ করে আবার চেষ্টা করুন।",
+          text:
+            error.message ||
+            "একটি সমস্যা হয়েছে, অনুগ্রহ করে আবার চেষ্টা করুন।",
           icon: "error",
           confirmButtonText: "ঠিক আছে",
           buttonsStyling: false,
@@ -134,7 +143,9 @@ export default function RegisterPage() {
       }
     } catch (err: unknown) {
       const errorMessage =
-        err instanceof Error ? err.message : "সার্ভারের সাথে সংযোগ স্থাপন করা সম্ভব হয়নি।";
+        err instanceof Error
+          ? err.message
+          : "সার্ভারের সাথে সংযোগ স্থাপন করা সম্ভব হয়নি।";
 
       Swal.fire({
         title: "ত্রুটি!",
@@ -154,11 +165,70 @@ export default function RegisterPage() {
 
   const handleChange = (
     field: keyof typeof formData,
-    value: string | boolean
+    value: string | boolean,
   ) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
     if (errors[field]) {
       setErrors((prev) => ({ ...prev, [field]: undefined }));
+    }
+  };
+
+  const handleGoogleSignIn = async () => {
+    try {
+      const { data, error } = await authClient.signIn.social({
+        provider: "google",
+        callbackURL: "/",
+      });
+
+      if (error) {
+        Swal.fire({
+          title: "লগইন ব্যর্থ হয়েছে",
+          text:
+            error.message ||
+            "গুগল দিয়ে সাইন ইন করা সম্ভব হয়নি, আবার চেষ্টা করুন।",
+          icon: "error",
+          confirmButtonText: "ঠিক আছে",
+          buttonsStyling: false,
+          customClass: {
+            confirmButton:
+              "bg-(--primary) text-white font-semibold px-5 py-2.5 rounded-xl cursor-pointer hover:opacity-90 transition-opacity",
+          },
+        });
+        return;
+      }
+
+      if (data) {
+        await Swal.fire({
+          title: "অভিনন্দন!",
+          text: "আপনার সাইন ইন সফল হয়েছে।",
+          icon: "success",
+          confirmButtonText: "ঠিক আছে",
+          buttonsStyling: false,
+          customClass: {
+            confirmButton:
+              "bg-(--primary) text-white font-semibold px-5 py-2.5 rounded-xl cursor-pointer hover:opacity-90 transition-opacity",
+          },
+        });
+
+        router.push("/");
+      }
+    } catch (err: unknown) {
+      const errorMessage =
+        err instanceof Error
+          ? err.message
+          : "সার্ভারের সাথে সংযোগ স্থাপন করা সম্ভব হয়নি।";
+
+      Swal.fire({
+        title: "ত্রুটি!",
+        text: errorMessage,
+        icon: "error",
+        confirmButtonText: "ঠিক আছে",
+        buttonsStyling: false,
+        customClass: {
+          confirmButton:
+            "bg-(--primary) text-white font-semibold px-5 py-2.5 rounded-xl cursor-pointer hover:opacity-90 transition-opacity",
+        },
+      });
     }
   };
 
@@ -170,7 +240,10 @@ export default function RegisterPage() {
         </h2>
         <p className="mt-1 text-center text-xs text-neutral-500">
           ইতিমধ্যে অ্যাকাউন্ট আছে?{" "}
-          <Link className="font-semibold text-(--primary) hover:underline" href="/login">
+          <Link
+            className="font-semibold text-(--primary) hover:underline"
+            href="/login"
+          >
             লগইন করুন
           </Link>
         </p>
@@ -376,7 +449,10 @@ export default function RegisterPage() {
                     শর্তাবলী
                   </Link>{" "}
                   ও{" "}
-                  <Link className="text-(--primary) underline" href="/privacy-policy">
+                  <Link
+                    className="text-(--primary) underline"
+                    href="/privacy-policy"
+                  >
                     গোপনীয়তা নীতি
                   </Link>{" "}
                   মেনে নিচ্ছি
@@ -413,6 +489,7 @@ export default function RegisterPage() {
             <div className="mt-5">
               <button
                 type="button"
+                onClick={handleGoogleSignIn}
                 className="w-full flex items-center justify-center gap-2 py-2.5 px-4 border border-neutral-200 rounded-xl text-sm font-semibold text-neutral-700 bg-white hover:bg-neutral-50 transition-colors cursor-pointer"
               >
                 <FcGoogle className="w-5 h-5" />
