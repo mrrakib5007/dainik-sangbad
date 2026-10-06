@@ -20,12 +20,15 @@ This platform provides readers with a seamless digital journalism experience. Be
 * **Comprehensive SEO & Meta:** Server-rendered OpenGraph cards, canonical tags, dynamic meta titles, and structured JSON-LD schemas.
 * **Skeleton Loading & Error Boundaries:** Smooth skeleton fallbacks and defensive API handling preventing UI crashes on upstream outages.
 * **Adaptive Theme & Responsive Design:** Tokenized styling using CSS variables (`--primary`), custom-crafted news cards, and mobile-friendly typography.
+* **Login & Signup System:** Login and Signup system uisng Better Auth
+* **Proxy for Profile Page:** Proxy security added. Only valid user go to the profile page.
 
 ## Tech Stack
 
 * **Framework:** Next.js
 * **Language:** TypeScript
 * **Styling:** Tailwind CSS
+* **Alert:** SweetAlert2
 * **Icons:** React Icons
 * **Deployment:** Vercel
 

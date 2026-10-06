@@ -172,7 +172,16 @@ const Navbar: React.FC<NavbarProps> = ({ navLinks, mobileNavLinks }) => {
                         </p>
                       </div>
 
-                      <div className="p-1.5">
+                      <div className="p-1.5 space-y-1">
+                        <Link
+                          href="/profile"
+                          onClick={() => setUserMenuOpen(false)}
+                          className="w-full flex items-center gap-2.5 px-3 py-2 text-xs font-semibold text-zinc-700 dark:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-xl transition cursor-pointer"
+                        >
+                          <FiUser className="w-4 h-4 text-zinc-500" />
+                          প্রোফাইল
+                        </Link>
+
                         <button
                           onClick={handleLogout}
                           className="w-full flex items-center gap-2.5 px-3 py-2 text-xs font-semibold text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/30 rounded-xl transition cursor-pointer"
@@ -306,6 +315,15 @@ const Navbar: React.FC<NavbarProps> = ({ navLinks, mobileNavLinks }) => {
                       </p>
                     </div>
                   </div>
+
+                  <Link
+                    href="/profile"
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="w-full inline-flex items-center justify-center gap-1.5 py-2 text-xs font-semibold bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-700 text-zinc-800 dark:text-zinc-200 rounded-lg transition shadow-xs"
+                  >
+                    <FiUser className="w-3.5 h-3.5" />
+                    প্রোফাইল
+                  </Link>
 
                   <button
                     onClick={handleLogout}
