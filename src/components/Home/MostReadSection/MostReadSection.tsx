@@ -131,7 +131,7 @@ const MostReadSection: React.FC<MostReadSectionProps> = ({ news }) => {
     const fetchPrayers = async () => {
       try {
         const res = await fetch(
-          "https://api.aladhan.com/v1/timingsByCity?city=Dhaka&country=Bangladesh&method=1"
+          "https://api.aladhan.com/v1/timingsByCity?city=Dhaka&country=Bangladesh&method=16&school=1"
         );
         const data = await res.json();
         const timings = data?.data?.timings;
@@ -201,7 +201,7 @@ const MostReadSection: React.FC<MostReadSectionProps> = ({ news }) => {
             নামাজের সময়সূচি (ঢাকা)
           </h3>
           <span className="text-xs text-neutral-400">
-            {isLoadingPrayer ? "আপডেট হচ্ছে..." : "আজকের ওয়াক্ত"}
+            {isLoadingPrayer ? "আপডেট হচ্ছে..." : "আজকের ওয়াক্ত শুরু"}
           </span>
         </div>
 
